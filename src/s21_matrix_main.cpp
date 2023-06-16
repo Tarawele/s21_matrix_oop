@@ -1,134 +1,79 @@
+#include <gtest/gtest.h>
 #include "s21_matrix_oop.h"
 
-S21Matrix::S21Matrix() : rows_(0), cols_(0), matrix_(nullptr) {}
+TEST(SumMatrix, True) {
+    S21Matrix matrix_a(2, 2);
+    S21Matrix matrix_b(2, 2);
+    S21Matrix result(2, 2);
 
-S21Matrix::~S21Matrix() {this->destroy_matrix();}
+    matrix_a(0, 0) = 3.14;
+    matrix_a(0, 1) = 0.56;
+    matrix_a(1, 0) = -69.3;
+    matrix_a(1, 1) = 0;
 
-void S21Matrix::destroy_matrix() {
-    if (this->matrix_ != nullptr) {
-        for (int i = 0; i < this->rows_; ++i) {
-            delete[] this->matrix_[i];
-        }
-        delete[] matrix_;
-    }
-    this->matrix_ = nullptr;
-    this->cols_ = 0;
-    this->rows_ = 0;
+    matrix_b(0, 0) = -78.14;
+    matrix_b(0, 1) = 0;
+    matrix_b(1, 0) = -0.3;
+    matrix_b(1, 1) = 2;
+
+    result(0, 0) = -75;
+    result(0, 1) = 0.56;
+    result(1, 0) = -69.6;
+    result(1, 1) = 2;
+    matrix_a.SumMatrix(matrix_b);
+    ASSERT_TRUE(matrix_a == result);
 }
+TEST(SumMatrix, False) {
+    S21Matrix matrix_a(1, 2);
+    S21Matrix matrix_b(2, 2);
+    
+    matrix_a(0, 0) = 3.14;
+    matrix_a(0, 1) = 0.56;
+    matrix_b(0, 0) = -78.14;
+    matrix_b(0, 1) = 0;
+    matrix_b(1, 0) = -0.3;
+    matrix_b(1, 1) = 2;
 
-S21Matrix::S21Matrix(int rows, int cols) : rows_(rows), cols_(cols) {
-    if (rows <= 0 || cols <= 0) {
-        throw out_of_range("Error: out of range");
-    }
-    this->mem_alloc();
+    EXPECT_THROW(matrix_a.SumMatrix(matrix_b), out_of_range);
 }
+// TEST(SubMatrix, True) {
+//     S21Matrix matrix_a(2, 2);
+//     S21Matrix matrix_b(2, 2);
+//     S21Matrix result(2, 2);
 
-void S21Matrix::mem_alloc() {
-    if (rows_ <=  0 || cols_ <= 0) {
-        throw out_of_range("Error: out of range");
-    }
-    this->matrix_ = new double*[this->rows_]();
-    for (int i = 0; i < this->rows_; ++i)
-    {
-        this->matrix_[i] = new double[this->cols_]();
-    }
-}
+//     matrix_a(0, 0) = 3;
+//     matrix_a(0, 1) = 2;
+//     matrix_a(1, 0) = -6;
+//     matrix_a(1, 1) = 0;
 
-void S21Matrix::copy_matrix(const S21Matrix& other) {
-    if (this->rows_ != other.rows_ || this->cols_ != other.cols_) {
-        throw out_of_range("Error: different matrix dimensions");
-    } else {
-        this->matrix_ = new double*[this->rows_]();
-        for (int i = 0; i < this->rows_; ++i) {
-            for (int j = 0; j < this->cols_; ++j) {
-                this->matrix_[i][j] = other.matrix_[i][j];
-            }
-        }
-    }
-}
+//     matrix_b(0, 0) = -7;
+//     matrix_b(0, 1) = 0;
+//     matrix_b(1, 0) = -3;
+//     matrix_b(1, 1) = 2;
 
-void S21Matrix::set_rows(int rows) {
-    S21Matrix tmp(*this);
-    this->destroy_matrix();
-    rows_ = rows;
-    cols_ = tmp.cols_;
-    this->mem_alloc();
-    for (int i = 0; i < this->rows_; i++) {
-        for (int j = 0; j < this->cols_; j++)
-        {
-            this->matrix_[i][j] =  tmp.matrix_[i][j];
-        }
-    }
-}
+//     result(0, 0) = 10;
+//     result(0, 1) = 2;
+//     result(1, 0) = -3;
+//     result(1, 1) = -2;
 
-void S21Matrix::set_cols(int cols) {
-    S21Matrix tmp(*this);
-    this->destroy_matrix();
-    cols_ = cols;
-    rows_ = tmp.rows_;
-    this->mem_alloc();
-    for (int i = 0; i < this->rows_; i++) {
-        for (int  j = 0; j < this->cols_; j++) {
-            this->matrix_[i][j] = tmp.matrix_[i][j];
-        }
-    }
-}
+//     matrix_a.SubMatrix(matrix_b);
+//     ASSERT_TRUE(matrix_a == result);
+// }
+// TEST(SubMatrix, False) {
+//     S21Matrix matrix_a(1, 2);
+//     S21Matrix matrix_b(2, 2);
 
-int S21Matrix::get_cols() {return this->cols_; }
-int S21Matrix::get_rows() {return this->rows_; }
+//     matrix_a(0, 0) = 3;
+//     matrix_a(0, 1) = 2;
+//     matrix_b(0, 0) = -7;
+//     matrix_b(0, 1) = 0;
+//     matrix_b(1, 0) = -3;
+//     matrix_b(1, 1) = 2;
 
-S21Matrix::S21Matrix(const S21Matrix& other) : rows_(other.rows_), cols_(other.cols_){
-    this->mem_alloc();
-    this->copy_matrix(other);
-}
+//     EXPECT_THROW(matrix_a.SubMatrix(matrix_b), std::out_of_range);
+// }
 
-S21Matrix::S21Matrix(S21Matrix&& other) : rows_(other.rows_), cols_(other.cols_) {
-    this->copy_matrix(other);
-    other.destroy_matrix();
-}
-
-void S21Matrix::SumMatrix(const S21Matrix& other) {
-    if (this->rows_ != other.rows_ || this->cols_ != other.cols_) {
-        throw out_of_range("Error: matrix have different dimensions");
-    } else {
-        for (int  i = 0; i < this->rows_; i++) {
-            for (int  j = 0; j < this->cols_; j++) {
-                this->matrix_[i][j] += other.matrix_[i][j];
-            }   
-        }   
-    }
-}
-
-void S21Matrix::SubMatrix(const S21Matrix& other) {
-    if (rows_ != other.rows_ || cols_ != other.cols_) {
-        throw out_of_range("Error: matrix have different dimensions");
-    } else {
-        for (int i = 0; i < this->rows_; i++) {
-            for (int j = 0; j < this->cols_; j++) {
-                this->matrix_[i][j] -= other.matrix_[i][j];
-            }
-        }
-    }
-}
-
-S21Matrix S21Matrix::operator+(const S21Matrix& other) {
-    S21Matrix M(*this);
-    M.SumMatrix(other);
-    return M; 
-}
-
-S21Matrix S21Matrix::operator-(const S21Matrix& other) {
-    S21Matrix M(*this);
-    M.SubMatrix(other);
-    return M;
-}
-
-S21Matrix& S21Matrix::operator+=(const S21Matrix& other) {
-    SumMatrix(other);
-    return *this;
-}
-
-S21Matrix& S21Matrix::operator-=(const S21Matrix& other) {
-    SubMatrix(other);
-    return *this;
+int main(int argc, char **argv) {
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

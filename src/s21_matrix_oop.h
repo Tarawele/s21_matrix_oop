@@ -14,6 +14,15 @@ class S21Matrix {
         S21Matrix(S21Matrix&& other);
         S21Matrix(const S21Matrix& other);
 
+        //Basics' operations
+        void SumMatrix(const S21Matrix& other); 
+        void SubMatrix(const S21Matrix& other);
+        bool eq_matrix(const S21Matrix& other);
+
+        double& operator()(int row, int col);
+        bool operator==(const S21Matrix& other);
+        S21Matrix& operator=(const S21Matrix& other);
+
         //Operators
         S21Matrix operator+(const S21Matrix& other);
         S21Matrix operator-(const S21Matrix& other);
@@ -28,10 +37,6 @@ class S21Matrix {
         int get_rows();
         int get_cols();
 
-        //Basics' operations
-        void SumMatrix(const S21Matrix& other); 
-        void SubMatrix(const S21Matrix& other);
-
         // Other methods..
     private:
         // Attributes
@@ -42,4 +47,4 @@ class S21Matrix {
         void copy_matrix(const S21Matrix& other);
 };
 
-#endif
+#endif // S21_MATRIX_OOP_H_
