@@ -5,7 +5,7 @@ CHECKFLAGS = -Wall -Werror -Wextra
 all: test_matrix_oop.a
 
 test: 
-	@${CC} s21_matrix_main.cpp test_matrix_oop.cpp ${CHECKFLAGS} ${CPPFLAGS} -o s21_matrix_main
+	@${CC} s21_matrix_oop.cpp test_matrix_oop.cpp ${CHECKFLAGS} ${CPPFLAGS} -o s21_matrix_main
 	@./s21_matrix_main
 
 %.o: %.cpp
@@ -18,7 +18,7 @@ test:
 clean:
 	@/bin/rm -rf *.o *.a s21_matrix_main *.gcno *gcda report *.info s21_matrix_main *.out
 
-gcov_report: s21_matrix_main.cpp test_matrix_oop.cpp
+gcov_report: test_matrix_oop.cpp
 	@$(CC) --coverage $^ ${CPPFLAGS} ${CHECKFLAGS} -o s21_matrix_main
 	@./s21_matrix_main
 	@lcov -t "s21_matrix_main" -o s21_matrix_main.info -c -d ./
