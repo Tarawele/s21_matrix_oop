@@ -131,7 +131,7 @@ void S21Matrix::MulMatrix(const S21Matrix &other) {
   for (int i = 0; i < this->rows_; ++i) {
     for (int j = 0; j < other.cols_; ++j) {
       for (int k = 0; k < this->rows_; ++k) {
-        result.matrix_[i][j] += other.matrix_[k][j] * this->matrix_[i][k];
+        result.matrix_[i][j] += this->matrix_[i][k] * other.matrix_[k][j];
       }
     }
   }
@@ -139,9 +139,9 @@ void S21Matrix::MulMatrix(const S21Matrix &other) {
 }
 
 void S21Matrix::MulNumber(const double num) {
-  for (int i = 0; i < this->rows_; i++) {
-    for (int j = 0; j < this->cols_; j++) {
-      this->matrix_[i][j] = this->matrix_[i][j] * num;
+  for (int i = 0; i < this->rows_; ++i) {
+    for (int j = 0; j < this->cols_; ++j) {
+      this->matrix_[i][j] *= num;
     }
   }
 }
@@ -156,6 +156,78 @@ S21Matrix S21Matrix::Transpose() {
   return result;
 }
 
+S21Matrix S21Matrix::InverseMatrix() {
+  double det = Determinant();
+  if (det == 0 || this->rows_ != cols_) {
+    throw out_of_range("Error: Determinant = 0");
+  }
+  S21Matrix neo(this->rows_, this->cols_);
+  S21Matrix temp = this->CalcComplements();
+  S21Matrix second_temp = temp.Transpose();
+  neo = second_temp;
+  neo.MulNumber(1 / det);
+
+  return neo;
+}
+
+S21Matrix S21Matrix::CalcComplements() {
+  if (this->rows_ != this->cols_) {
+    throw out_of_range("Error: Matrix have different dimensions");
+  }
+  S21Matrix neo(this->rows_, this->cols_);
+  if (this->rows_ == 1 && this->cols_ == 1) {
+    neo.matrix_[0][0] = 1;
+  } else {
+    for (int i = 0; i < neo.rows_; ++i) {
+      for (int j = 0; j < neo.cols_; ++j) {
+        S21Matrix temp = MinorMatrix(*this, i, j);
+        neo.matrix_[i][j] = temp.Determinant() * pow(-1.0, (i + 1) + (j + 1));
+      }
+    }
+  }
+  return neo;
+}
+
+S21Matrix S21Matrix::MinorMatrix(const S21Matrix &other, int i_rows,
+                                 int j_cols) {
+  S21Matrix neo(other.rows_ - 1, other.cols_ - 1);
+  for (int i = 0; i < other.rows_; ++i) {
+    for (int j = 0; j < other.cols_; ++j) {
+      if (i != i_rows && j != j_cols) {
+        if (i > i_rows && j < j_cols) {
+          neo.matrix_[i - 1][j] = other.matrix_[i][j];
+        } else if (i > i_rows && j > j_cols) {
+          neo.matrix_[i - 1][j - 1] = other.matrix_[i][j];
+        } else if (i < i_rows && j > j_cols) {
+          neo.matrix_[i][j - 1] = other.matrix_[i][j];
+        } else {
+          neo.matrix_[i][j] = other.matrix_[i][j];
+        }
+      }
+    }
+  }
+
+  return neo;
+}
+
+double S21Matrix::Determinant() {
+  if (this->rows_ != this->cols_) {
+    throw out_of_range("Error: Matrix have different dimensions");
+  }
+  double det = 0;
+  if (this->rows_ == 1 && this->cols_ == 1) {
+    det = matrix_[0][0];
+  } else if (this->rows_ == 2 && this->cols_ == 2) {
+    det = (this->matrix_[0][0] * this->matrix_[1][1]) -
+          (this->matrix_[1][0] * this->matrix_[0][1]);
+  } else {
+    for (int i = 1; i <= this->cols_; ++i) {
+      S21Matrix neo = MinorMatrix(*this, 0, i - 1);
+      det += pow(-1, 1 + (double)i) * matrix_[0][i - 1] * neo.Determinant();
+    }
+  }
+  return det;
+}
 S21Matrix S21Matrix::operator+(const S21Matrix &other) {
   S21Matrix tmp(*this);
   tmp.SumMatrix(other);
@@ -172,7 +244,12 @@ S21Matrix S21Matrix::operator*(const S21Matrix &other) {
   tmp.MulMatrix(other);
   return tmp;
 }
+S21Matrix S21Matrix::operator*(const double num) {
+  S21Matrix tmp(*this);
+  tmp.MulNumber(num);
 
+  return tmp;
+}
 bool S21Matrix::operator==(const S21Matrix &other) {
   return this->EqMatrix(other);
 };
@@ -189,6 +266,10 @@ S21Matrix &S21Matrix::operator*=(const S21Matrix &other) {
   MulMatrix(other);
   return *this;
 }
+S21Matrix &S21Matrix::operator*=(const double num) {
+  MulNumber(num);
+  return *this;
+}
 S21Matrix &S21Matrix::operator=(const S21Matrix &other) {
   this->destroy_matrix();
   this->rows_ = other.rows_;
@@ -203,4 +284,10 @@ double &S21Matrix::operator()(int row, int col) {
     throw out_of_range("Error: out of range");
   }
   return this->matrix_[row][col];
+}
+
+S21Matrix operator*(const double num, const S21Matrix &other) {
+  S21Matrix result(other);
+  result.MulNumber(num);
+  return result;
 }
