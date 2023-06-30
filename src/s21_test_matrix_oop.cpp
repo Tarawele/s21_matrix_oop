@@ -1,6 +1,30 @@
 #include <gtest/gtest.h>
 
-#include "s21_matrix_oop.hpp"
+#include "s21_matrix_oop.h"
+
+// TEST(MatrixMoveConstructorTest, MoveConstructor) {
+//   // Create a 2x2 matrix
+//   S21Matrix mat1(2, 2);
+//   mat1(1, 1) = 1;
+//   mat1(1, 2) = 2;
+//   mat1(2, 1) = 3;
+//   mat1(2, 2) = 4;
+
+//   // Create a copy of the matrix using move constructor
+//   S21Matrix mat2 = std::move(mat1);
+
+//   // Check that original matrix is empty
+//   EXPECT_EQ(mat1.get_rows(), 0);
+//   EXPECT_EQ(mat1.get_cols(), 0);
+
+//   // Check the values of the moved matrix
+//   EXPECT_EQ(mat2.get_rows(), 2);
+//   EXPECT_EQ(mat2.get_cols(), 2);
+//   EXPECT_EQ(mat2(1, 1), 1);
+//   EXPECT_EQ(mat2(1, 2), 2);
+//   EXPECT_EQ(mat2(2, 1), 3);
+//   EXPECT_EQ(mat2(2, 2), 4);
+// }
 
 TEST(EqMatrix, True) {
   S21Matrix matrix_a(3, 3);
@@ -466,84 +490,84 @@ TEST(Inverse, True) {
 
   ASSERT_TRUE(matrix_a.InverseMatrix().EqMatrix(result));
 
-  // S21Matrix matrix_b(3, 3);
-  // matrix_b(0, 0) = 1;
-  // matrix_b(0, 1) = 2;
-  // matrix_b(0, 2) = 3;
-  // matrix_b(1, 0) = 4;
-  // matrix_b(1, 1) = 5;
-  // matrix_b(1, 2) = 6;
-  // matrix_b(2, 0) = 7;
-  // matrix_b(2, 1) = 8;
-  // matrix_b(2, 2) = 9;
+  S21Matrix matrix_b(3, 3);
+  matrix_b(0, 0) = 1;
+  matrix_b(0, 1) = 2;
+  matrix_b(0, 2) = 3;
+  matrix_b(1, 0) = 4;
+  matrix_b(1, 1) = 5;
+  matrix_b(1, 2) = 6;
+  matrix_b(2, 0) = 7;
+  matrix_b(2, 1) = 8;
+  matrix_b(2, 2) = 9;
 
-  // EXPECT_THROW(matrix_b.InverseMatrix(), std::out_of_range);
+  EXPECT_THROW(matrix_b.InverseMatrix(), std::out_of_range);
 }
-// TEST(Get, True) {
-//   S21Matrix matrix_a(3, 3);
+TEST(Get, True) {
+  S21Matrix matrix_a(3, 3);
 
-//   matrix_a(0, 0) = 2;
-//   matrix_a(0, 1) = 5;
-//   matrix_a(0, 2) = 7;
-//   matrix_a(1, 0) = 6;
-//   matrix_a(1, 1) = 3;
-//   matrix_a(1, 2) = 4;
-//   matrix_a(2, 0) = 5;
-//   matrix_a(2, 1) = -2;
-//   matrix_a(2, 2) = -3;
+  matrix_a(0, 0) = 2;
+  matrix_a(0, 1) = 5;
+  matrix_a(0, 2) = 7;
+  matrix_a(1, 0) = 6;
+  matrix_a(1, 1) = 3;
+  matrix_a(1, 2) = 4;
+  matrix_a(2, 0) = 5;
+  matrix_a(2, 1) = -2;
+  matrix_a(2, 2) = -3;
 
-//   ASSERT_EQ(matrix_a.get_rows(), 3);
-//   ASSERT_EQ(matrix_a.get_cols(), 3);
-// }
-// TEST(Set, True) {
-//   S21Matrix matrix_a(3, 3);
-//   S21Matrix result(3, 2);
+  ASSERT_EQ(matrix_a.get_rows(), 3);
+  ASSERT_EQ(matrix_a.get_cols(), 3);
+}
+TEST(Set, True) {
+  S21Matrix matrix_a(3, 3);
+  S21Matrix result(3, 2);
 
-//   matrix_a(0, 0) = 2;
-//   matrix_a(0, 1) = 5;
-//   matrix_a(0, 2) = 7;
-//   matrix_a(1, 0) = 6;
-//   matrix_a(1, 1) = 3;
-//   matrix_a(1, 2) = 4;
-//   matrix_a(2, 0) = 5;
-//   matrix_a(2, 1) = -2;
-//   matrix_a(2, 2) = -3;
+  matrix_a(0, 0) = 2;
+  matrix_a(0, 1) = 5;
+  matrix_a(0, 2) = 7;
+  matrix_a(1, 0) = 6;
+  matrix_a(1, 1) = 3;
+  matrix_a(1, 2) = 4;
+  matrix_a(2, 0) = 5;
+  matrix_a(2, 1) = -2;
+  matrix_a(2, 2) = -3;
 
-//   result(0, 0) = 2;
-//   result(0, 1) = 5;
+  result(0, 0) = 2;
+  result(0, 1) = 5;
 
-//   result(1, 0) = 6;
-//   result(1, 1) = 3;
+  result(1, 0) = 6;
+  result(1, 1) = 3;
 
-//   result(2, 0) = 5;
-//   result(2, 1) = -2;
-//   matrix_a.set_cols(2);
+  result(2, 0) = 5;
+  result(2, 1) = -2;
+  matrix_a.set_cols(2);
 
-//   ASSERT_TRUE(matrix_a == result);
+  ASSERT_TRUE(matrix_a == result);
 
-//   S21Matrix matrix_b(3, 3);
-//   S21Matrix result_b(2, 3);
+  S21Matrix matrix_b(3, 3);
+  S21Matrix result_b(2, 3);
 
-//   matrix_b(0, 0) = 2;
-//   matrix_b(0, 1) = 5;
-//   matrix_b(0, 2) = 7;
-//   matrix_b(1, 0) = 6;
-//   matrix_b(1, 1) = 3;
-//   matrix_b(1, 2) = 4;
-//   matrix_b(2, 0) = 5;
-//   matrix_b(2, 1) = -2;
-//   matrix_b(2, 2) = -3;
+  matrix_b(0, 0) = 2;
+  matrix_b(0, 1) = 5;
+  matrix_b(0, 2) = 7;
+  matrix_b(1, 0) = 6;
+  matrix_b(1, 1) = 3;
+  matrix_b(1, 2) = 4;
+  matrix_b(2, 0) = 5;
+  matrix_b(2, 1) = -2;
+  matrix_b(2, 2) = -3;
 
-//   result_b(0, 0) = 2;
-//   result_b(0, 1) = 5;
-//   result_b(0, 2) = 7;
-//   result_b(1, 0) = 6;
-//   result_b(1, 1) = 3;
-//   result_b(1, 2) = 4;
+  result_b(0, 0) = 2;
+  result_b(0, 1) = 5;
+  result_b(0, 2) = 7;
+  result_b(1, 0) = 6;
+  result_b(1, 1) = 3;
+  result_b(1, 2) = 4;
 
-//   matrix_b.set_rows(2);
-//   ASSERT_TRUE(matrix_b == result_b);
-// }
+  matrix_b.set_rows(2);
+  ASSERT_TRUE(matrix_b == result_b);
+}
 
 int main(int argc, char **argv) {
   testing::InitGoogleTest(&argc, argv);

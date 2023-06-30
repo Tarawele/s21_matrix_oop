@@ -5,7 +5,7 @@ WAEX = -Wall -Werror -Wextra
 all: s21_matrix_oop.a
 
 test: 
-	@${CC} s21_matrix_oop.cpp s21_test_matrix_oop.cpp ${WAEX} ${CPPFLAGS} -o s21_test_matrix_oop
+	@${CC} s21_matrix_oop.cpp s21_matrix_operations.cpp s21_test_matrix_oop.cpp ${WAEX} ${CPPFLAGS} -o s21_test_matrix_oop
 	@./s21_test_matrix_oop
 
 %.o: %.cpp
@@ -16,19 +16,17 @@ test:
 	@ranlib $@
 
 clean:
-	@/bin/rm -rf *.o *.a s21_test_matrix_oop *.gcno *gcda report *.info s21_test_matrix_oop *.out
+	@/bin/rm -rf *.o *.a s21_test_matrix_oop *.gcno *gcda report *.info s21_test_matrix_oop *.out *.log
 
-gcov_report: s21_matrix_oop.cpp s21_test_matrix_oop.cpp
+gcov_report: s21_matrix_oop.cpp s21_matrix_operations.cpp s21_test_matrix_oop.cpp
 	@$(CC) --coverage $^ ${CPPFLAGS} ${WAEX} -o s21_test_matrix_oop
 	@./s21_test_matrix_oop
 	@lcov -t "s21_test_matrix_oop" -o s21_test_matrix_oop.info -c -d ./
 	@genhtml -o report s21_test_matrix_oop.info
-
+mkstyle:
+	clang-format -style=Google -i *.cpp *.h
 style:
-	python3 ../materials/linters/cpplint.py --extensions=cpp *.cpp *.h
-
-cppcheck:
-	cppcheck --enable=all --suppress=missingIncludeSystem . *.cpp
-
+	clang-format -style=Google -n *.cpp *.h
+# --log-file=valgrind.log
 leaks: test
-	valgrind --leak-check=full ./s21_test_matrix_oop
+	valgrind --leak-check=yes --show-leak-kinds=all --track-origins=yes --read-var-info=yes --verbose ./s21_test_matrix_oop
