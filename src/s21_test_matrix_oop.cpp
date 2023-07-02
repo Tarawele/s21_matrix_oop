@@ -2,29 +2,25 @@
 
 #include "s21_matrix_oop.h"
 
-// TEST(MatrixMoveConstructorTest, MoveConstructor) {
-//   // Create a 2x2 matrix
-//   S21Matrix mat1(2, 2);
-//   mat1(1, 1) = 1;
-//   mat1(1, 2) = 2;
-//   mat1(2, 1) = 3;
-//   mat1(2, 2) = 4;
+TEST(MatrixTest, MoveConstructorTest) {
+  S21Matrix matrix_a(3, 3);
 
-//   // Create a copy of the matrix using move constructor
-//   S21Matrix mat2 = std::move(mat1);
+  // Move constructor
+  S21Matrix matrix_b(std::move(matrix_a));
 
-//   // Check that original matrix is empty
-//   EXPECT_EQ(mat1.get_rows(), 0);
-//   EXPECT_EQ(mat1.get_cols(), 0);
-
-//   // Check the values of the moved matrix
-//   EXPECT_EQ(mat2.get_rows(), 2);
-//   EXPECT_EQ(mat2.get_cols(), 2);
-//   EXPECT_EQ(mat2(1, 1), 1);
-//   EXPECT_EQ(mat2(1, 2), 2);
-//   EXPECT_EQ(mat2(2, 1), 3);
-//   EXPECT_EQ(mat2(2, 2), 4);
-// }
+  EXPECT_EQ(matrix_a.get_rows(), 0);
+  EXPECT_EQ(matrix_a.get_cols(), 0);
+  EXPECT_EQ(matrix_b.get_rows(), 3);
+  EXPECT_EQ(matrix_b.get_cols(), 3);
+}
+TEST(S21MatrixTest, MoveAssignmentOperator) {
+  // Create a temporary S21Matrix object
+  S21Matrix matrix(1, 1);
+  S21Matrix tempMatrix(5, 5);
+  matrix = std::move(tempMatrix);
+  EXPECT_EQ(5, matrix.get_rows());
+  EXPECT_EQ(5, matrix.get_cols());
+}
 
 TEST(EqMatrix, True) {
   S21Matrix matrix_a(3, 3);
@@ -247,7 +243,6 @@ TEST(OperatorMultiplyMatrix, True) {
 
   ASSERT_TRUE((matrix_a * matrix_b) == result);
 }
-//
 TEST(OperatorMultiplyNumber, True) {
   S21Matrix matrix_a(2, 2);
   S21Matrix result(2, 2);
@@ -264,6 +259,7 @@ TEST(OperatorMultiplyNumber, True) {
 
   ASSERT_TRUE((matrix_a * 10) == result);
 }
+
 TEST(OperatorMultiplyNum, True) {
   S21Matrix matrix_a(2, 2);
   S21Matrix result(2, 2);

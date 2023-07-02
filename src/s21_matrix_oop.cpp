@@ -2,10 +2,10 @@
 
 S21Matrix::S21Matrix(int rows, int cols)
     : rows_(rows), cols_(cols), matrix_(nullptr) {
-  if (rows_ <= 0 || cols_ <= 0) {
+  if (rows <= 0 && cols <= 0) {
     throw std::out_of_range("Error: rows and cols are incorrect");
   }
-  this->mem_alloc();
+  mem_alloc();
   for (int i = 0; i < rows; ++i) {
     for (int j = 0; j < cols; ++j) {
       matrix_[i][j] = 0.0;
@@ -13,11 +13,11 @@ S21Matrix::S21Matrix(int rows, int cols)
   }
 }
 
-S21Matrix::~S21Matrix() { this->destroy_matrix(); }
+S21Matrix::~S21Matrix() { destroy_matrix(); }
 
 void S21Matrix::destroy_matrix() {
   if (matrix_ != nullptr) {
-    for (int i = 0; i < this->rows_; ++i) {
+    for (int i = 0; i < rows_; ++i) {
       delete[] matrix_[i];
     }
     delete[] matrix_;
@@ -27,12 +27,12 @@ void S21Matrix::destroy_matrix() {
   matrix_ = nullptr;
 }
 void S21Matrix::mem_alloc() {
-  if ((this->cols_ <= 0) || (this->rows_ <= 0)) {
+  if ((cols_ <= 0) || (rows_ <= 0)) {
     throw std::out_of_range("Error: out of range");
   }
-  this->matrix_ = new double *[this->rows_];
-  for (int i = 0; i < this->rows_; ++i) {
-    this->matrix_[i] = new double[this->cols_];
+  matrix_ = new double *[rows_];
+  for (int i = 0; i < rows_; ++i) {
+    matrix_[i] = new double[cols_];
   }
 }
 
@@ -41,9 +41,8 @@ void S21Matrix::copy_matrix(const S21Matrix &other) {
     throw std::out_of_range("Error: Matrix have different dimensions");
   }
   if (matrix_ != other.matrix_) {
-    // this->mem_alloc();
-    for (int i = 0; i < this->rows_; ++i) {
-      for (int j = 0; j < this->cols_; ++j) {
+    for (int i = 0; i < rows_; ++i) {
+      for (int j = 0; j < cols_; ++j) {
         matrix_[i][j] = other.matrix_[i][j];
       }
     }
@@ -82,20 +81,13 @@ int S21Matrix::get_rows() { return this->rows_; }
 S21Matrix::S21Matrix(S21Matrix &&other) noexcept
     : rows_(other.rows_), cols_(other.cols_), matrix_(other.matrix_) {
   other.matrix_ = nullptr;
-  cols_ = 0;
-  rows_ = 0;
+  other.cols_ = 0;
+  other.rows_ = 0;
 }
-// S21Matrix::S21Matrix(S21Matrix &&other) noexcept
-//     : rows_(other.rows_), cols_(other.cols_), matrix_(nullptr) {
-//   std::swap(matrix_, other.matrix_);
-//   other.matrix_ = nullptr;
-//   cols_ = 0;
-//   rows_ = 0;
-// }
 S21Matrix::S21Matrix(const S21Matrix &other)
     : rows_(other.rows_), cols_(other.cols_) {
-  this->mem_alloc();
-  this->copy_matrix(other);
+  mem_alloc();
+  copy_matrix(other);
 }
 
 S21Matrix S21Matrix::operator+(const S21Matrix &other) {
@@ -144,17 +136,26 @@ S21Matrix &S21Matrix::operator*=(const double num) {
   return *this;
 }
 S21Matrix &S21Matrix::operator=(const S21Matrix &other) {
-  this->destroy_matrix();
-  this->rows_ = other.rows_;
-  this->cols_ = other.cols_;
-  this->mem_alloc();
-  this->copy_matrix(other);
+  if (this != &other) {
+    destroy_matrix();
+    rows_ = other.rows_;
+    cols_ = other.cols_;
+    mem_alloc();
+    copy_matrix(other);
+  }
   return *this;
 }
-
+S21Matrix &S21Matrix::operator=(S21Matrix &&other) noexcept {
+  if (this != &other) {
+    std::swap(rows_, other.rows_);
+    std::swap(cols_, other.cols_);
+    std::swap(matrix_, other.matrix_);
+  }
+  return *this;
+}
 double &S21Matrix::operator()(int row, int col) const {
-  if ((row >= this->rows_) + (col >= this->cols_) + (row < 0) + (col < 0)) {
+  if ((row > rows_) && (col > cols_) && (row < 0) && (col < 0)) {
     throw std::out_of_range("Error: out of range");
   }
-  return this->matrix_[row][col];
+  return matrix_[row][col];
 }

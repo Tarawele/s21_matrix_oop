@@ -7,7 +7,6 @@
 class S21Matrix {
  public:
   // Method
-  // S21Matrix();  // Default constructor
   S21Matrix(int rows = 0, int cols = 0);
   S21Matrix(S21Matrix &&other) noexcept;
   S21Matrix(const S21Matrix &other);
@@ -16,7 +15,7 @@ class S21Matrix {
   // Operations
   void SumMatrix(const S21Matrix &other);
   void SubMatrix(const S21Matrix &other);
-  bool EqMatrix(const S21Matrix &other) const noexcept;
+  bool EqMatrix(const S21Matrix &other) const;
   void MulMatrix(const S21Matrix &other);
   void MulNumber(const double num);
   S21Matrix Transpose();
@@ -34,6 +33,7 @@ class S21Matrix {
   S21Matrix &operator+=(const S21Matrix &other);
   S21Matrix &operator-=(const S21Matrix &other);
   S21Matrix &operator=(const S21Matrix &other);
+  S21Matrix &operator=(S21Matrix &&other) noexcept;
   S21Matrix &operator*=(const S21Matrix &other);
   S21Matrix &operator*=(const double num);
 
